@@ -14,18 +14,25 @@ function createFeatures(earthquakeData) {
     layer.bindPopup("<h2><center> Location <br></h2>" + feature.properties.place + "<hr><center><h2>Magnitude<br></h2>"+feature.properties.mag);
   }
 
+  // color selector based on magnitude
   function chooseColor(feature) {
     if (feature.properties.mag < 1) {
-      return {color: "#96f705", fillColor:"#96f705", fillOpacity: .5};
+      return {color: "lightblue", fillColor:"lightblue", fillOpacity: .5};
     }
     else if (feature.properties.mag >= 1.00 && feature.properties.mag <= 2) {
-      return {color: "#f5d905", fillColor: "#f5d905", fillOpacity: .5};
+      return {color: "lightgreen", fillColor: "lightgreen", fillOpacity: .5};
     }
-    else if (feature.properties.mag >= 2.000 && feature.properties.mag <= 4) {
-      return {color: "#f29305", fillColor: "#f29305", fillOpacity: .5};
+    else if (feature.properties.mag >= 2.000 && feature.properties.mag <= 3) {
+      return {color: "yellow", fillColor: "yellow", fillOpacity: .5};
     }
-    else if (feature.properties.mag > 4.000) {
-      return {color: "#fc1a05", fillColor: "#fc1a05", fillOpacity: .5};
+    else if (feature.properties.mag > 3.000 && feature.properties.mag <= 4) {
+      return {color: "gold", fillColor: "gold", fillOpacity: .5};
+    }
+    else if (feature.properties.mag > 4.000 && feature.properties.mag <= 5) {
+      return {color: "orange", fillColor: "orange", fillOpacity: .5};
+    }
+    else if (feature.properties.mag > 5.000) {
+      return {color: "red", fillColor: "red", fillOpacity: .5};
     }
     else {
       return {color: "black"}
@@ -95,16 +102,16 @@ function createMap(earthquakes) {
 
   // create a legend
   var legend = L.control({position: 'bottomright'});
-  legend.onAdd = function (myMap) {
+  legend.onAdd = function (map) {
 
 	var div = L.DomUtil.create('div', 'info legend'),
 		grades = [0, 1, 2, 3, 4, 5],
-		labels = ['0-1','1-2','2-3','3-4','4+'];
+		labels = ['0-1','1-2','2-3','3-4','4-5', '5+'];
 
 	// loop through our density intervals and generate a label with a colored square for each interval
 	for (var i = 0; i < grades.length; i++) {
 		div.innerHTML +=
-			'<i style="background:' + chooseColor(grades[i] + 1) + '"></i> ' +
+			'<i style="background:' + getColor(grades[i] + 1) + '"></i> ' +
 			grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
 	}
 
@@ -113,4 +120,14 @@ function createMap(earthquakes) {
 
 legend.addTo(myMap);
 
+};
+
+// color selector for legend
+function getColor(magnitude) {
+  return magnitude > 5 ? "red":
+         magnitude > 4 ? "orange":
+         magnitude > 3 ? "gold":
+         magnitude > 2 ? "yellow":
+         magnitude > 1 ? "lightgreen":
+         "lightblue";
 }
